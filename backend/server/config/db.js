@@ -1,9 +1,7 @@
 var dbName = "group_project";
 var username = "group_user";
 var password = "group_user";
-var fullUrl =
-  "mongodb+srv://<username>:<password>@myfirstcluster.rwgrtyi.mongodb.net/<dbname>?retryWrites=true&w=majority";
-//var connString = prefix+username+':'+password+'@'+dbUrl+dbName+postfix;
+var fullUrl = "mongodb+srv://<username>:<password>@myfirstcluster.rwgrtyi.mongodb.net/<dbname>?retryWrites=true&w=majority";
 fullUrl = fullUrl
   .replace("<username>", username)
   .replace("<password>", password)

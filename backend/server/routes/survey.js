@@ -1,3 +1,16 @@
+/*******************************
+File Name: survey.js
+Description: It is the file to route survey requests to the right responses.
+Web app name: Aurora Research Company
+Team name: A-Star
+Team Members:
+  Kuo, Yi-Cheng (301181514)
+  Yeung, Lok Ki (301252535)
+  Lam, Hing Yu (301257216)
+  Chung, Ting Hin (301287013)
+  Le, Hoang Long (301236235)
+********************************/
+
 let express = require('express');
 let router = express.Router();
 let controller = require('../controllers/survey');

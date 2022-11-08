@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const indexRouter = require('./server/routes/index');
+const surveyRouter = require('./server/routes/survey');
 
 const app = express();
 
@@ -12,16 +13,13 @@ const app = express();
 const db = require('./server/config/db');
 db.initializeDBConnection();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'server/views'));
-app.set('view engine', 'ejs');
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
+app.use('/survey', surveyRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

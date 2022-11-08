@@ -1,7 +1,6 @@
 let mongoose = require('mongoose'); 
 
 const questionSchema = mongoose.Schema({ 
-    question_id: Number, 
     question_priority: Number, 
     name: String,    
     type: String,   // yes/no, true/false, radio buttons, dropdown list 
@@ -10,7 +9,6 @@ const questionSchema = mongoose.Schema({
 
 // create a schema class 
 let surveySchema = mongoose.Schema({ 
-    survey_id: Number, 
     author: String, // username 
     name: String,   // name of survey 
     description: String,    // description of survey 

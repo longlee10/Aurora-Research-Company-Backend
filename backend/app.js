@@ -15,6 +15,7 @@ const createError = require('http-errors');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const cors = require('cors');
 
 const indexRouter = require('./server/routes/index');
 const surveyRouter = require('./server/routes/survey');

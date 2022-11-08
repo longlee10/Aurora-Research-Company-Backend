@@ -6,41 +6,69 @@ const Survey = require('../models/survey');
 module.exports.optionCountSummary = (req, res, next) => {
     const surveyId = req.body.survey_id;
     const questionId = req.body.question_id;
-
-    // Find survey
-    Survey.findById(surveyId, (err, survey) => {  
+    
+    getResponsesOptions(surveyId, questionId, (err, predefinedOptions, responsesOptions) => {
         if (err) {
             res.status(500).send(err);
         } else {
-            // Validate if the question type is yes-no
+            // Obtain the initial results
+            const initialResults = Object.assign({}, ...predefinedOptions.map((option) => ({[option]: 0})));
+            // Obtain counted results
+            const results = responsesOptions.reduce((acc, option) => {
+                    acc[option] = (acc[option] || 0) + 1 ;
+                    return acc;
+                }, initialResults);
+            res.status(200).send(results);
+        }
+    });
+}
+
+
+/* Answer summary by listing options (without distinct) */
+module.exports.optionListSummary = (req, res, next) => {
+    const surveyId = req.body.survey_id;
+    const questionId = req.body.question_id;
+
+    getResponsesOptions(surveyId, questionId, (err, predefinedOptions, responsesOptions) => {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.status(200).send(responsesOptions);
+        }
+    });
+}
+
+/**
+ * @param {err, predefinedOptions, responsesOptions} callback 
+ */
+const getResponsesOptions = (surveyId, questionId, callback) => {
+    // Find survey
+    Survey.findById(surveyId, (err, survey) => {  
+        if (err) {
+            callback(err, null, null);
+        } else {
             const question = survey.questions.id(questionId);
             if (question == null) {
-                res.status(500).send({ message: 'Invalid question ID.'});
+                callback({ message: 'Invalid question ID.'}, null, null);
             } else {
                 // Find answers
                 Answer.find({ survey_id: surveyId }).exec((err, answers) => {
                     if (err) {
-                        res.status(500).send(err);
+                        callback(err, null, null);
                     } else {
-                        // Obtain the initial results
-                        const initialResults = Object.assign({}, ...question.options.map((option) => ({[option]: 0})));
-
-                        // Obtain counted results
-                        const results = answers
+                        // Obtain responses options
+                        const responsesOptions = answers
                             .flatMap(answer => answer.responses)
                             .filter(response => response.question_id == questionId)
-                            .flatMap(response => response.options)
-                            .reduce((acc, option) => {
-                                acc[option] = (acc[option] || 0) + 1 ;
-                                return acc;
-                            }, initialResults);
-                        res.status(200).send(results);
+                            .flatMap(response => response.options);
+                        
+                        callback(err, question.options, responsesOptions);  
                     }
                 });
             }
         }
     });
-}
+};
 
 /* Add an answer */
 module.exports.add = (req, res, next) => {

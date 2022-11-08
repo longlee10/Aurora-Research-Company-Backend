@@ -2,8 +2,8 @@
 const Answer = require('../models/answer');
 const Survey = require('../models/survey');
 
-/* Answer summary for options */
-module.exports.optionSummary = (req, res, next) => {
+/* Answer summary by counting options */
+module.exports.optionCountSummary = (req, res, next) => {
     const surveyId = req.body.survey_id;
     const questionId = req.body.question_id;
 
@@ -31,9 +31,7 @@ module.exports.optionSummary = (req, res, next) => {
                             .filter(response => response.question_id == questionId)
                             .flatMap(response => response.options)
                             .reduce((acc, option) => {
-                                if(option in acc) {
-                                    acc[option]++;
-                                }
+                                acc[option] = (acc[option] || 0) + 1 ;
                                 return acc;
                             }, initialResults);
                         res.status(200).send(results);

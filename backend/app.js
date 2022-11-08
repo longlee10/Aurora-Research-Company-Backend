@@ -31,6 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(cors()); // Enable all CORS
 app.use('/', indexRouter);
 app.use('/survey', surveyRouter);
 app.use('/answer', answerRouter);

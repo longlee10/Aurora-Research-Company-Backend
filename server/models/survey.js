@@ -13,6 +13,20 @@ Team Members:
 
 let mongoose = require('mongoose'); 
 
+const responseSchema = mongoose.Schema({ 
+  question_id: mongoose.Schema.Types.ObjectId , // id of the question 
+  options: [String]   //answers 
+}); 
+
+// create a schema class 
+const answerSchema = mongoose.Schema({ 
+  response_date: Date, // response date 
+  responses: [{    // responses to the questions 
+      type: responseSchema, 
+      required: true, 
+  }], 
+});
+
 const questionSchema = mongoose.Schema({ 
     question_priority: Number, 
     name: String,    
@@ -31,6 +45,10 @@ let surveySchema = mongoose.Schema({
         type: questionSchema, 
         required: true, 
       }], 
+    answers: [{ // answers available 
+        type: answerSchema, 
+        required: true, 
+    }]
     }, 
     {
         collection: "surveys" 

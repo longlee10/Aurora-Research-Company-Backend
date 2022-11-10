@@ -30,7 +30,35 @@ module.exports.list = (req, res, next) => {
         if(err) {
             res.status(500).send(err);
         } else {
-            res.status(200).send(list);
+            const results = list.map(survey => ({
+                id: survey._id, 
+                name: survey.name, 
+                description: survey.description
+            }));
+            res.status(200).send(results);
+        }
+    });
+}
+
+/* Get a survey item */
+module.exports.item = (req, res, next) => {
+    Survey.findById(req.body.id, (err, survey) => {
+        if(err) {
+            res.status(500).send(err);
+        } else {
+            res.status(200).send(survey);
+        }
+    });
+}
+
+/* Get a survey item (Without answers) */
+module.exports.itemWithoutAnswers = (req, res, next) => {
+    Survey.findById(req.body.id, (err, survey) => {
+        if(err) {
+            res.status(500).send(err);
+        } else {
+            delete survey.answers;
+            res.status(200).send(survey);
         }
     });
 }
@@ -48,8 +76,25 @@ module.exports.add = (req, res, next) => {
 
 /* Update a survey */
 module.exports.update = (req, res, next) => {
-    Survey.updateOne({_id: req.body._id}, req.body, (err) => {
-        if (err) {
+    Survey.findByIdAndUpdate(req.body._id, {
+            name: req.body.name,
+            description: req.body.description,
+            start_time: req.body.start_time,
+            end_time: req.body.end_time,
+            questions: req.body.questions
+        }, (err, survey) => {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.status(200).send({});
+            }
+    });
+}
+
+/* Delete a survey */
+module.exports.delete = (req, res, next) => {
+    Survey.deleteOne({_id: req.body.id}, (err) => {
+        if(err) {
             res.status(500).send(err);
         } else {
             res.status(200).send({});
@@ -57,9 +102,9 @@ module.exports.update = (req, res, next) => {
     });
 }
 
-/* Delete a survey */
-module.exports.delete = (req, res, next) => {
-    Survey.remove({_id: req.body._id}, (err) => {
+/* Answer a survey */
+module.exports.answer = (req, res, next) => {
+    Survey.updateOne({ _id: req.body.id}, { $push: {answers: req.body.answer} }, (err, survey) => {
         if(err) {
             res.status(500).send(err);
         } else {

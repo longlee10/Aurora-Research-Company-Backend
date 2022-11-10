@@ -56,6 +56,8 @@ module.exports.itemWithoutAnswers = (req, res, next) => {
     Survey.findById(req.body.id, (err, survey) => {
         if(err) {
             res.status(500).send(err);
+        } else if (survey == null) {
+            res.status(500).send({message: "Invalid survey id."});
         } else {
             survey.answers = [];
             res.status(200).send(survey);

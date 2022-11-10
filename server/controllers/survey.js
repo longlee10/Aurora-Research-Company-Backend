@@ -57,7 +57,7 @@ module.exports.itemWithoutAnswers = (req, res, next) => {
         if(err) {
             res.status(500).send(err);
         } else {
-            delete survey.answers;
+            survey.answers = [];
             res.status(200).send(survey);
         }
     });

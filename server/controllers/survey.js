@@ -31,7 +31,7 @@ module.exports.list = (req, res, next) => {
             res.status(500).send(err);
         } else {
             const results = list.map(survey => ({
-                id: survey._id, 
+                _id: survey._id, 
                 name: survey.name, 
                 description: survey.description
             }));
@@ -42,7 +42,7 @@ module.exports.list = (req, res, next) => {
 
 /* Get a survey item */
 module.exports.item = (req, res, next) => {
-    Survey.findById(req.body.id, (err, survey) => {
+    Survey.findById(req.body._id, (err, survey) => {
         if(err) {
             res.status(500).send(err);
         } else {
@@ -53,7 +53,7 @@ module.exports.item = (req, res, next) => {
 
 /* Get a survey item (Without answers) */
 module.exports.itemWithoutAnswers = (req, res, next) => {
-    Survey.findById(req.body.id, (err, survey) => {
+    Survey.findById(req.body._id, (err, survey) => {
         if(err) {
             res.status(500).send(err);
         } else if (survey == null) {
@@ -95,7 +95,7 @@ module.exports.update = (req, res, next) => {
 
 /* Delete a survey */
 module.exports.delete = (req, res, next) => {
-    Survey.deleteOne({_id: req.body.id}, (err) => {
+    Survey.deleteOne({_id: req.body._id}, (err) => {
         if(err) {
             res.status(500).send(err);
         } else {
@@ -106,7 +106,7 @@ module.exports.delete = (req, res, next) => {
 
 /* Answer a survey */
 module.exports.answer = (req, res, next) => {
-    Survey.updateOne({ _id: req.body.id}, { $push: {answers: req.body.answer} }, (err, survey) => {
+    Survey.updateOne({ _id: req.body._id}, { $push: {answers: req.body.answer} }, (err, survey) => {
         if(err) {
             res.status(500).send(err);
         } else {

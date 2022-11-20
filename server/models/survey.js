@@ -11,50 +11,55 @@ Team Members:
   Le, Hoang Long (301236235)
 ********************************/
 
-let mongoose = require('mongoose'); 
+let mongoose = require('mongoose');
 
-const responseSchema = mongoose.Schema({ 
-  question_id: mongoose.Schema.Types.ObjectId , // id of the question 
+const responseSchema = mongoose.Schema({
+  question_id: mongoose.Schema.Types.ObjectId, // id of the question 
   options: [String]   //answers 
-}); 
-
-// create a schema class 
-const answerSchema = mongoose.Schema({ 
-  response_date: Date, // response date 
-  responses: [{    // responses to the questions 
-      type: responseSchema, 
-      required: true, 
-  }], 
 });
 
-const questionSchema = mongoose.Schema({ 
-    question_priority: Number, 
-    name: String,    
-    type: String,   // yes/no, true/false, radio buttons, dropdown list 
-    options:[String]  
-  }); 
+// create a schema class 
+const answerSchema = mongoose.Schema({
+  response_date: Date, // response date 
+  responses: [{    // responses to the questions 
+    type: responseSchema,
+    required: true,
+  }],
+});
+
+const questionSchema = mongoose.Schema({
+  question_priority: Number,
+  name: String,
+  type: String,   // yes/no, true/false, radio buttons, dropdown list 
+  options: [String]
+});
 
 // create a schema class 
-let surveySchema = mongoose.Schema({ 
-    author: String, // username 
-    name: String,   // name of survey 
-    description: String,    // description of survey 
-    start_time: Date, 
-    end_time: Date, 
-    questions: [{    // questions available 
-        type: questionSchema, 
-        required: true, 
-      }], 
-    answers: [{ // answers available 
-        type: answerSchema, 
-        required: true, 
-    }]
-    }, 
-    {
-        collection: "surveys" 
-    }
-); 
+let surveySchema = mongoose.Schema({
+  author: String, // username 
+  name: String,   // name of survey 
+  description: String,    // description of survey 
+  start_time: Date,
+  end_time: Date,
+  isActive: // determine if the survey is visible
+  {
+    type: Boolean,
+    default: true
+  },
+  questions: [{    // questions available 
+    type: questionSchema,
+    required: true,
+  }],
+  answers: [{ // answers available 
+    type: answerSchema,
+    required: true,
+  }]
+},
+  {
+    collection: "surveys"
+  }
+);
 
-const SurveySchemaModel = mongoose.model("surveys", surveySchema); 
+const SurveySchemaModel = mongoose.model("surveys", surveySchema);
 
 module.exports = SurveySchemaModel; 

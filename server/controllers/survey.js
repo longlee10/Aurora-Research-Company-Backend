@@ -106,8 +106,9 @@ module.exports.delete = (req, res, next) => {
 
 /* Answer a survey */
 module.exports.answer = (req, res, next) => {
-    Survey.updateOne({ _id: req.body._id}, { $push: {answers: req.body.answer} }, (err, survey) => {
+    Survey.updateOne({ _id: req.body._id}, { $push: {answers: req.body.answers} }, (err, survey) => {
         if(err) {
+            console.log(err);
             res.status(500).send(err);
         } else {
             res.status(200).send({});

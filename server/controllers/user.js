@@ -1,29 +1,87 @@
-/*******************************
-File Name: survey.js
-Description: It is the survey controller to do specific actions.
-Web app name: Aurora Research Company
-Team name: A-Star
-Team Members:
-  Kuo, Yi-Cheng (301181514)
-  Yeung, Lok Ki (301252535)
-  Lam, Hing Yu (301257216)
-  Chung, Ting Hin (301287013)
-  Le, Hoang Long (301236235)
-********************************/
+const express = require('express')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
+const router = express.Router()
+const userSchema = require('../models/User')
+const authorize = require('../middlewares/auth')
+const { check, validationResult } = require('express-validator')
 
-/* Create reference to user model */
-const User = require('../models/user');
+/* Process Sign Up */
+module.exports.Register = (req, res)=>{
+    const errors = validationResult(req)
+    console.log(req.body)
 
-/* Process Login */
-module.exports.processLogin = (req, res, next)=>{
-
+    if (!errors.isEmpty()) {
+      return res.status(422).jsonp(errors.array())
+    } else {
+      bcrypt.hash(req.body.password, 10).then((hash) => {
+        const user = new userSchema({
+          name: req.body.name,
+          email: req.body.email,
+          displayName: req.body.displayName,
+          contact_number: req.body.contact_number,
+          password: hash,
+        })
+        user
+          .save()
+          .then((response) => {
+            res.status(201).json({
+              message: 'User successfully created!',
+              result: response,
+            })
+          })
+          .catch((error) => {
+            res.status(500).json({
+              error: error,
+            })
+          })
+      })
+    }
 }
 
-/* Process Register */
-module.exports.processRegister = (req, res, next)=>{
-
+/* Process Sign In */
+module.exports.Login = (req, res)=>{
+    let getUser
+  userSchema
+    .findOne({
+      username: req.body.username,
+    })
+    .then((user) => {
+      if (!user) {
+        return res.status(401).json({
+          message: 'Authentication failed',
+        })
+      }
+      getUser = user
+      return bcrypt.compare(req.body.password, user.password)
+    })
+    .then((response) => {
+      if (!response) {
+        return res.status(401).json({
+          message: 'Authentication failed',
+        })
+      }
+      let jwtToken = jwt.sign(
+        {
+          username: getUser.username,
+          userId: getUser._id,
+        },
+        'longer-secret-is-better',
+        {
+          expiresIn: '1h',
+        },
+      )
+      res.status(200).json({
+        token: jwtToken,
+        expiresIn: 3600,
+        _id: getUser._id,
+      })
+    })
+    .catch((err) => {
+      return res.status(401).json({
+        message: 'Authentication failed',
+      })
+    })
 }
 
-// generate login & register
-module.exports.login = (req, res, next)=>{res.render('login.ejs')}
-module.exports.register = (req, res, next)=>{res.render('register.ejs')};
+/* Sign Out */

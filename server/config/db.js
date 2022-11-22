@@ -34,6 +34,7 @@ function initializeDBConnection() {
   mongodb.once("open", () => {
     console.log("Database Connected");
   });
+  
 }
 
 module.exports = {

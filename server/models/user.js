@@ -11,18 +11,22 @@ Team Members:
   Le, Hoang Long (301236235)
 ********************************/
 let mongoose = require('mongoose');
+let passportLocalMongoose = require('passport-local-mongoose');
 
 let UserSchema = new mongoose.Schema(
     {
         email: String,
         contact_number: String,
         username: String,
-        password: String,
         displayName: String
     } ,
     {
         collection: "users",
     });
 
+// configure options for User Model
+let options = ({ missingPasswordError: 'Wrong / Missing Password'});
+
+UserSchema.plugin(passportLocalMongoose, options);
 
 module.exports = mongoose.model('users', UserSchema);

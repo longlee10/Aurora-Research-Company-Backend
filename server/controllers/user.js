@@ -1,87 +1,86 @@
-const express = require('express')
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
-const router = express.Router()
-const userSchema = require('../models/User')
-const authorize = require('../middlewares/auth')
-const { check, validationResult } = require('express-validator')
+let passport = require('passport');
 
-/* Process Sign Up */
-module.exports.Register = (req, res)=>{
-    const errors = validationResult(req)
-    console.log(req.body)
+// enable jwt
+let jwt = require('jsonwebtoken');
+let DB = require('../config/db');
 
-    if (!errors.isEmpty()) {
-      return res.status(422).jsonp(errors.array())
-    } else {
-      bcrypt.hash(req.body.password, 10).then((hash) => {
-        const user = new userSchema({
-          name: req.body.name,
-          email: req.body.email,
-          displayName: req.body.displayName,
-          contact_number: req.body.contact_number,
-          password: hash,
-        })
-        user
-          .save()
-          .then((response) => {
-            res.status(201).json({
-              message: 'User successfully created!',
-              result: response,
-            })
-          })
-          .catch((error) => {
-            res.status(500).json({
-              error: error,
-            })
-          })
-      })
-    }
+// create the User Model instance
+let User = require('../models/user');
+
+/* Process Login */
+module.exports.login = (req, res, next) => {
+  passport.authenticate('local',
+  (err, user, info) => {
+      // server err?
+      if(err)
+      {
+          return res.status(500).json(err);
+      }
+      // is there a user login error?
+      if(!user)
+      {
+          return res.status(500).json({message: "Authentication Error"});
+      }
+      req.login(user, (err) => {
+          // server error?
+          if(err)
+          {
+              return res.status(500).json(err);
+          }
+
+          const payload = 
+          {
+              id: user._id,
+              displayName: user.displayName,
+              username: user.username,
+              email: user.email,
+              contact_number: user.contact_number
+          }
+
+          const authToken = jwt.sign(payload, DB.Secret, {
+              expiresIn: 604800 // 1 week
+          });
+          
+          return res.json({success: true, message: 'User Logged in Successfully!', user: {
+              id: user._id,
+              displayName: user.displayName,
+              username: user.username,
+              email: user.email,
+              contact_number: user.contact_number
+          }, token: authToken});
+
+      });
+  })(req, res, next);
 }
 
-/* Process Sign In */
-module.exports.Login = (req, res)=>{
-    let getUser
-  userSchema
-    .findOne({
+/* Process Register */
+module.exports.register = (req, res, next) => {
+  if (req.body.password == undefined) {
+    return res.status(500).json({success: false, message: 'Unable to find password!'}); 
+  } 
+  // instantiate a user object
+  let newUser = new User({
       username: req.body.username,
-    })
-    .then((user) => {
-      if (!user) {
-        return res.status(401).json({
-          message: 'Authentication failed',
-        })
+      email: req.body.email,
+      displayName: req.body.displayName,
+      contact_number: req.body.contact_number
+  });
+  User.register(newUser, req.body.password, (err) => {
+      if(err)
+      {
+          if(err.name == "UserExistsError")
+          {
+            return res.status(500).json({success: false, message: 'User Already Exists!'});
+          }
       }
-      getUser = user
-      return bcrypt.compare(req.body.password, user.password)
-    })
-    .then((response) => {
-      if (!response) {
-        return res.status(401).json({
-          message: 'Authentication failed',
-        })
+      else
+      {
+        return res.json({success: true, msg: 'User Registered Successfully!'});
       }
-      let jwtToken = jwt.sign(
-        {
-          username: getUser.username,
-          userId: getUser._id,
-        },
-        'longer-secret-is-better',
-        {
-          expiresIn: '1h',
-        },
-      )
-      res.status(200).json({
-        token: jwtToken,
-        expiresIn: 3600,
-        _id: getUser._id,
-      })
-    })
-    .catch((err) => {
-      return res.status(401).json({
-        message: 'Authentication failed',
-      })
-    })
+  });
 }
 
-/* Sign Out */
+module.exports.logout = (req, res, next) => {
+  req.logout();
+  res.json({success: true, message: 'User Successfully Logged out!'});
+}

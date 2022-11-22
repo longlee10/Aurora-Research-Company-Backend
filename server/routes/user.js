@@ -13,12 +13,12 @@ Team Members:
 
 const express = require('express');
 const router = express();
-const authenticationControl = require('../controllers/user')
+const controller = require('../controllers/user');
 
 /* Sign Up request */
-router.post('/register', authenticationControl.Register);
+router.post('/register', controller.register);
 
 /* Sign In Request */
-router.post('/login', authenticationControl.Login);
+router.post('/login', controller.login);
 
 module.exports = router;

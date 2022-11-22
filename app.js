@@ -20,9 +20,15 @@ const cors = require('cors');
 /* Authentication modules */
 let session = require('express-session');
 let passport = require('passport');
-let passportLocal = require('passport-local');
-let localStrategy = passportLocal.Strategy;
-let flash = require("connect-flash");
+let passportJWT = require('passport-jwt');
+let JWTStrategy = passportJWT.Strategy;
+let ExtractJWT = passportJWT.ExtractJwt;
+
+let flash = require('connect-flash');
+
+// database setup
+const db = require('./server/config/db');
+db.initializeDBConnection();
 
 /* Routes */
 const indexRouter = require('./server/routes/index');
@@ -31,20 +37,12 @@ const userRouter = require('./server/routes/user');
 
 const app = express();
 
-// database setup
-const db = require('./server/config/db');
-const { default: mongoose } = require('mongoose');
-db.initializeDBConnection();
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use(cors()); // Enable all CORS
-app.use('/', indexRouter);
-app.use('/survey', surveyRouter);
-app.use('/login',userRouter); // Route for authentication
 
 /* Set up express session */
 app.use(
@@ -66,10 +64,14 @@ app.use(passport.session());
 let User = require('./server/models/user');
 passport.use(User.createStrategy()); 
 
+//serialize and deserialize user object info -encrypt and decrypt
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 // JWT strategy
 let jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJWT.fromAuthHeaderAsBearerToken();
-jwtOptions.secretOrKey = "SomeSecret";
+jwtOptions.secretOrKey = db.Secret;
 
 let strategy = new JWTStrategy(jwtOptions, (jwt_payload, done) => {
   User.findById(jwt_payload.id)
@@ -82,9 +84,10 @@ let strategy = new JWTStrategy(jwtOptions, (jwt_payload, done) => {
 });
 passport.use(strategy);
 
-//serialize and deserialize user object info -encrypt and decrypt
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+// routing
+app.use('/', indexRouter);
+app.use('/survey', surveyRouter);
+app.use('/user', userRouter); // Route for authentication
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

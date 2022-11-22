@@ -19,8 +19,12 @@ const cors = require('cors');
 
 const indexRouter = require('./server/routes/index');
 const surveyRouter = require('./server/routes/survey');
+const userRouter = require('./server/routes/user');
 
 const app = express();
+
+// set up view engine -> only for testing
+app.set("view-engine", "ejs");
 
 // database setup
 const db = require('./server/config/db');
@@ -34,6 +38,7 @@ app.use(cookieParser());
 app.use(cors()); // Enable all CORS
 app.use('/', indexRouter);
 app.use('/survey', surveyRouter);
+app.use(userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

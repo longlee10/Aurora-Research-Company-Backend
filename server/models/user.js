@@ -18,12 +18,7 @@ let UserSchema = new mongoose.Schema(
         contact_number: String,
         username: String,
         password: String,
-        displayName: String,
-        role:{
-            type: String,
-            default: 'user',    // can either be user/ admin
-            trim: true,
-        },
+        displayName: String
     } ,
     {
         collection: "users",

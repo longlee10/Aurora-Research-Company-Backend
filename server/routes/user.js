@@ -1,6 +1,6 @@
 /*******************************
-File Name: survey.js
-Description: It is the survey controller to do specific actions.
+File Name: user.js
+Description: It is the user controller to do specific actions.
 Web app name: Aurora Research Company
 Team name: A-Star
 Team Members:

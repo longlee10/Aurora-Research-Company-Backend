@@ -11,7 +11,6 @@ Team Members:
   Le, Hoang Long (301236235)
 ********************************/
 
-
 var dbName = "group_project";
 var username = "group_user";
 var password = "group_user";
@@ -40,5 +39,5 @@ function initializeDBConnection() {
 
 module.exports = {
     initializeDBConnection,
-    "Secret": "SomeSecret"
+    "Secret": "daf$%#SDG"
 };

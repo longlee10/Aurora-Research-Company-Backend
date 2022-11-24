@@ -18,20 +18,16 @@ const logger = require('morgan');
 const cors = require('cors');
 
 /* Authentication modules */
-let session = require('express-session');
 let passport = require('passport');
 let passportJWT = require('passport-jwt');
 let JWTStrategy = passportJWT.Strategy;
 let ExtractJWT = passportJWT.ExtractJwt;
-
-let flash = require('connect-flash');
 
 // database setup
 const db = require('./server/config/db');
 db.initializeDBConnection();
 
 /* Routes */
-const indexRouter = require('./server/routes/index');
 const surveyRouter = require('./server/routes/survey');
 const userRouter = require('./server/routes/user');
 
@@ -53,9 +49,6 @@ app.use(
   })
 );
 
-//initialize flash
-app.use(flash());
-
 //intialize passport
 app.use(passport.initialize());
 app.use(passport.session());
@@ -75,12 +68,8 @@ jwtOptions.secretOrKey = db.Secret;
 
 let strategy = new JWTStrategy(jwtOptions, (jwt_payload, done) => {
   User.findById(jwt_payload.id)
-    .then(user => {
-      return done(null, user);
-    })
-    .catch(err => {
-      return done(err, false);
-    });
+    .then(user => done(null, user))
+    .catch(err => done(err, false));
 });
 passport.use(strategy);
 
@@ -99,7 +88,7 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500).send(err);
+  res.status(err.status || 500).json(err);
 });
 
 module.exports = app;

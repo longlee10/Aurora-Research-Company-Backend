@@ -1,6 +1,6 @@
 /*******************************
-File Name: survey.js
-Description: This file defines the survey schema of the database.
+File Name: user.js
+Description: This file defines the user schema of the database.
 Web app name: Aurora Research Company
 Team name: A-Star
 Team Members:

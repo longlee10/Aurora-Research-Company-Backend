@@ -15,7 +15,6 @@ let passport = require('passport');
 
 // enable jwt
 let jwt = require('jsonwebtoken');
-let DB = require('../config/db');
 
 // create the User Model instance
 let User = require('../models/user');

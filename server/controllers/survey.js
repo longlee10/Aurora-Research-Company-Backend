@@ -13,6 +13,17 @@ Team Members:
 
 // create a reference to the model
 const Survey = require('../models/survey');
+const jwt = require('jsonwebtoken');
+
+/* Obtain user from payload */
+getUser = (req) => {
+    const auth = req.headers.authorization;
+    if (auth == undefined) {
+        return undefined;
+    } else {
+        return jwt.verify(auth.split(" ")[1], process.env.JWT_KEY);
+    }
+}
 
 /* List surveys */
 module.exports.list = (req, res, next) => {
@@ -22,7 +33,8 @@ module.exports.list = (req, res, next) => {
         if (req.body.onlyActive) {
             return { start_time: { $lte: currentDate }, end_time: { $gte: currentDate } };
         } else {
-            return {};
+            const user = getUser(req);
+            return { author: user == undefined  ? "NO-AUTHORS": user.username };
         }
     };
     // Find results

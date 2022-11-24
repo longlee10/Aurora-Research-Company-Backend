@@ -42,7 +42,7 @@ module.exports.login = (req, res, next) => {
               contact_number: user.contact_number
           }
 
-          const authToken = jwt.sign(payload, DB.Secret, {
+          const authToken = jwt.sign(payload, process.env.JWT_KEY, {
               expiresIn: 604800 // 1 week
           });
           

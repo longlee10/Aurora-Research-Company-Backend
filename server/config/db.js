@@ -11,20 +11,11 @@ Team Members:
   Le, Hoang Long (301236235)
 ********************************/
 
-var dbName = "group_project";
-var username = "group_user";
-var password = "group_user";
-var fullUrl = "mongodb+srv://<username>:<password>@myfirstcluster.rwgrtyi.mongodb.net/<dbname>?retryWrites=true&w=majority";
-fullUrl = fullUrl
-  .replace("<username>", username)
-  .replace("<password>", password)
-  .replace("<dbname>", dbName);
-
 function initializeDBConnection() {
   let mongoose = require("mongoose");
 
   //point mongoose to the DB URI
-  mongoose.connect(fullUrl, {
+  mongoose.connect(process.env.DB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });

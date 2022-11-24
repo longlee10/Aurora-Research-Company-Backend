@@ -10,11 +10,14 @@ Team Members:
   Chung, Ting Hin (301287013)
   Le, Hoang Long (301236235)
 ********************************/
-
 const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
+const dotdev = require('dotenv');
+
+// Load configuration
+dotdev.config();
 
 /* Authentication modules */
 let passport = require('passport');
@@ -52,7 +55,7 @@ passport.deserializeUser(User.deserializeUser());
 // JWT strategy
 let jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJWT.fromAuthHeaderAsBearerToken();
-jwtOptions.secretOrKey = "daf$%#SDG";
+jwtOptions.secretOrKey = process.env.JWT_KEY;
 
 let strategy = new JWTStrategy(jwtOptions, (jwt_payload, done) => {
   User.findById(jwt_payload.id)

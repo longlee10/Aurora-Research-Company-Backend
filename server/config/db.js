@@ -38,6 +38,5 @@ function initializeDBConnection() {
 }
 
 module.exports = {
-    initializeDBConnection,
-    "Secret": "daf$%#SDG"
+    initializeDBConnection
 };

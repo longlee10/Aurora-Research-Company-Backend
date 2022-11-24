@@ -13,12 +13,10 @@ Team Members:
 
 const createError = require('http-errors');
 const express = require('express');
-const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
 
 /* Authentication modules */
-let session = require('express-session');
 let passport = require('passport');
 let passportJWT = require('passport-jwt');
 let JWTStrategy = passportJWT.Strategy;
@@ -37,22 +35,11 @@ const app = express();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 
 app.use(cors()); // Enable all CORS
 
-/* Set up express session */
-app.use(
-  session({
-    secret: "SomeSecret",
-    saveUninitialized: false,
-    resave: false,
-  })
-);
-
 //intialize passport
 app.use(passport.initialize());
-app.use(passport.session());
 
 //implement a user authentication Strategy
 let User = require('./server/models/user');
@@ -65,7 +52,7 @@ passport.deserializeUser(User.deserializeUser());
 // JWT strategy
 let jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJWT.fromAuthHeaderAsBearerToken();
-jwtOptions.secretOrKey = db.Secret;
+jwtOptions.secretOrKey = "daf$%#SDG";
 
 let strategy = new JWTStrategy(jwtOptions, (jwt_payload, done) => {
   User.findById(jwt_payload.id)

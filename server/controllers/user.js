@@ -29,7 +29,7 @@ module.exports.login = (req, res, next) => {
       } else if(!user) {
         return res.status(500).json({message: "Authentication Error"});
       }
-      req.login(user, (err) => {
+      req.login(user, {session: false}, (err) => {
           if(err) {
             return res.status(500).json(err);
           }
@@ -83,7 +83,7 @@ module.exports.register = (req, res, next) => {
 module.exports.logout = (req, res, next) => {
   req.logout(err => {
     if (err) {
-      return res.status(500).json({success: false, message: err.name});
+      res.status(500).json({success: false, message: err.name});
     } else {
       res.status(200).json({success: true, message: 'User Successfully Logged out!'});
     }

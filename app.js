@@ -18,6 +18,7 @@ const logger = require('morgan');
 const cors = require('cors');
 
 /* Authentication modules */
+let session = require('express-session');
 let passport = require('passport');
 let passportJWT = require('passport-jwt');
 let JWTStrategy = passportJWT.Strategy;
@@ -74,7 +75,6 @@ let strategy = new JWTStrategy(jwtOptions, (jwt_payload, done) => {
 passport.use(strategy);
 
 // routing
-app.use('/', indexRouter);
 app.use('/survey', surveyRouter);
 app.use('/user', userRouter); // Route for authentication
 

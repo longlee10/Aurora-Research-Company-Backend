@@ -10,6 +10,7 @@ Team Members:
   Chung, Ting Hin (301287013)
   Le, Hoang Long (301236235)
 ********************************/
+
 let passport = require('passport');
 
 // enable jwt

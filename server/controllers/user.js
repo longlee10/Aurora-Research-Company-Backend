@@ -24,23 +24,15 @@ let User = require('../models/user');
 module.exports.login = (req, res, next) => {
   passport.authenticate('local',
   (err, user, info) => {
-      // server err?
-      if(err)
-      {
-          return res.status(500).json(err);
-      }
-      // is there a user login error?
-      if(!user)
-      {
-          return res.status(500).json({message: "Authentication Error"});
+      if(err) {
+        return res.status(500).json(err);
+      } else if(!user) {
+        return res.status(500).json({message: "Authentication Error"});
       }
       req.login(user, (err) => {
-          // server error?
-          if(err)
-          {
-              return res.status(500).json(err);
+          if(err) {
+            return res.status(500).json(err);
           }
-
           const payload = 
           {
               id: user._id,
@@ -54,7 +46,7 @@ module.exports.login = (req, res, next) => {
               expiresIn: 604800 // 1 week
           });
           
-          return res.json({success: true, message: 'User Logged in Successfully!', user: {
+          return res.status(200).json({success: true, message: 'User Logged in Successfully!', user: {
               id: user._id,
               displayName: user.displayName,
               username: user.username,
@@ -79,21 +71,22 @@ module.exports.register = (req, res, next) => {
       contact_number: req.body.contact_number
   });
   User.register(newUser, req.body.password, (err) => {
-      if(err)
-      {
-          if(err.name == "UserExistsError")
-          {
-            return res.status(500).json({success: false, message: 'User Already Exists!'});
-          }
-      }
-      else
-      {
-        return res.json({success: true, msg: 'User Registered Successfully!'});
+      if(err) {
+        return res.status(500).json({success: false, message: err.name});
+      } else {
+        return res.status(200).json({success: true, msg: 'User Registered Successfully!'});
       }
   });
 }
 
+/* Process logout */
 module.exports.logout = (req, res, next) => {
-  req.logout();
-  res.json({success: true, message: 'User Successfully Logged out!'});
+  req.logout(err => {
+    if (err) {
+      return res.status(500).json({success: false, message: err.name});
+    } else {
+      res.status(200).json({success: true, message: 'User Successfully Logged out!'});
+    }
+  });
+
 }

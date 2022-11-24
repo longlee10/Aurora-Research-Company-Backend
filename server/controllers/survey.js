@@ -16,6 +16,7 @@ const Survey = require('../models/survey');
 
 /* List surveys */
 module.exports.list = (req, res, next) => {
+    console.log(req.body);
     // Filter criteria
     const filter = () => {
         const currentDate = new Date();

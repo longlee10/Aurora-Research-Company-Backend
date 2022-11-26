@@ -26,7 +26,7 @@ module.exports.login = (req, res, next) => {
       if(err) {
         return res.status(500).json(err);
       } else if(!user) {
-        return res.status(500).json({message: "Authentication Error"});
+        return res.status(500).json({success: false, message: "Authentication Error"});
       }
       req.login(user, {session: false}, (err) => {
           if(err) {
@@ -59,21 +59,14 @@ module.exports.login = (req, res, next) => {
 
 /* Process Register */
 module.exports.register = (req, res, next) => {
-  if (req.body.password == undefined) {
-    return res.status(500).json({success: false, message: 'Unable to find password!'}); 
-  } 
-  // instantiate a user object
-  let newUser = new User({
-      username: req.body.username,
-      email: req.body.email,
-      displayName: req.body.displayName,
-      contact_number: req.body.contact_number
-  });
-  User.register(newUser, req.body.password, (err) => {
+  // Force to set the role as the normal user
+  req.body.role = "user";
+  User.register(req.body, req.body.password, (err) => {
       if(err) {
+        console.log(err);
         return res.status(500).json({success: false, message: err.name});
       } else {
-        return res.status(200).json({success: true, msg: 'User Registered Successfully!'});
+        return res.status(200).json({success: true, message: 'User Registered Successfully!'});
       }
   });
 }

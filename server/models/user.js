@@ -15,10 +15,24 @@ let passportLocalMongoose = require('passport-local-mongoose');
 
 let UserSchema = new mongoose.Schema(
     {
-        email: String,
-        contact_number: String,
-        username: String,
-        displayName: String
+        email: {
+            type: String,
+            unique: true,
+            require: true
+        },
+        contact_number: {
+            type: String,
+            require: true
+        },
+        username: {
+            type: String,
+            require: true,
+            unique: true 
+        },
+        displayName: {
+            type: String,
+            require: true
+        },
     } ,
     {
         collection: "users",

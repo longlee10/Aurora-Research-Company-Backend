@@ -34,7 +34,7 @@ module.exports.list = (req, res, next) => {
             return { start_time: { $lte: currentDate }, end_time: { $gte: currentDate } };
         } else {
             const user = getUser(req);
-            return { author: user == undefined  ? "NO-AUTHORS": user.username };
+            return { author: user == undefined  ? undefined : user.username };
         }
     };
     // Find results

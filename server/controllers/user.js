@@ -26,7 +26,7 @@ module.exports.login = (req, res, next) => {
       if(err) {
         return res.status(500).json(err);
       } else if(!user) {
-        return res.status(500).json({success: false, message: "Authentication Error"});
+        return res.status(500).json({message: "Incorrect username or password."});
       }
       req.login(user, {session: false}, (err) => {
           if(err) {
@@ -45,7 +45,7 @@ module.exports.login = (req, res, next) => {
               expiresIn: 604800 // 1 week
           });
           
-          return res.status(200).json({success: true, message: 'User Logged in Successfully!', user: {
+          return res.status(200).json({ user: {
               id: user._id,
               displayName: user.displayName,
               username: user.username,
@@ -61,24 +61,22 @@ module.exports.login = (req, res, next) => {
 module.exports.register = (req, res, next) => {
   // Force to set the role as the normal user
   req.body.role = "user";
-  User.register(req.body, req.body.password, (err) => {
-      if(err) {
-        console.log(err);
-        return res.status(500).json({success: false, message: err.name});
+  User.register(req.body, req.body.password, err => {
+    console.log(err);
+      if(err && err.name == "UserExistsError") {
+        return res.status(500).json({message: "The username is already existed."});
+      } else if (err && err.code == 11000) {
+        // Assume that only email and username are unique.
+        return res.status(500).json({message: "The email is already existed."});
+      } else if (err) {
+        return res.status(500).json(err);
       } else {
-        return res.status(200).json({success: true, message: 'User Registered Successfully!'});
+        return res.status(200).json({});
       }
   });
 }
 
 /* Process logout */
 module.exports.logout = (req, res, next) => {
-  req.logout(err => {
-    if (err) {
-      res.status(500).json({success: false, message: err.name});
-    } else {
-      res.status(200).json({success: true, message: 'User Successfully Logged out!'});
-    }
-  });
-
+  // Nothing to do now. 
 }

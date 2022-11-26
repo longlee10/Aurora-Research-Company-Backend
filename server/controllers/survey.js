@@ -13,6 +13,17 @@ Team Members:
 
 // create a reference to the model
 const Survey = require('../models/survey');
+const jwt = require('jsonwebtoken');
+
+/* Obtain user from payload */
+getUser = (req) => {
+    const auth = req.headers.authorization;
+    if (auth == undefined) {
+        return undefined;
+    } else {
+        return jwt.verify(auth.split(" ")[1], process.env.JWT_KEY);
+    }
+}
 
 /* List surveys */
 module.exports.list = (req, res, next) => {
@@ -22,20 +33,21 @@ module.exports.list = (req, res, next) => {
         if (req.body.onlyActive) {
             return { start_time: { $lte: currentDate }, end_time: { $gte: currentDate } };
         } else {
-            return {};
+            const user = getUser(req);
+            return { author: user == undefined  ? undefined : user.username };
         }
     };
     // Find results
     Survey.find(filter()).exec((err, list) => {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).json(err);
         } else {
             const results = list.map(survey => ({
                 _id: survey._id, 
                 name: survey.name, 
                 description: survey.description
             }));
-            res.status(200).send(results);
+            res.status(200).json(results);
         }
     });
 }
@@ -44,9 +56,9 @@ module.exports.list = (req, res, next) => {
 module.exports.item = (req, res, next) => {
     Survey.findById(req.body._id, (err, survey) => {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).json(err);
         } else {
-            res.status(200).send(survey);
+            res.status(200).json(survey);
         }
     });
 }
@@ -55,12 +67,12 @@ module.exports.item = (req, res, next) => {
 module.exports.itemWithoutAnswers = (req, res, next) => {
     Survey.findById(req.body._id, (err, survey) => {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).json(err);
         } else if (survey == null) {
-            res.status(500).send({message: "Invalid survey id."});
+            res.status(500).json({message: "Invalid survey id."});
         } else {
             survey.answers = [];
-            res.status(200).send(survey);
+            res.status(200).json(survey);
         }
     });
 }
@@ -69,9 +81,9 @@ module.exports.itemWithoutAnswers = (req, res, next) => {
 module.exports.add = (req, res, next) => {
     Survey.create(req.body, (err, survey) => {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).json(err);
         } else {
-            res.status(200).send({});
+            res.status(200).json({});
         }
     });
 }
@@ -86,9 +98,9 @@ module.exports.update = (req, res, next) => {
             questions: req.body.questions
         }, (err, survey) => {
             if (err) {
-                res.status(500).send(err);
+                res.status(500).json(err);
             } else {
-                res.status(200).send({});
+                res.status(200).json({});
             }
     });
 }
@@ -97,20 +109,20 @@ module.exports.update = (req, res, next) => {
 module.exports.delete = (req, res, next) => {
     Survey.deleteOne({_id: req.body._id}, (err) => {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).json(err);
         } else {
-            res.status(200).send({});
+            res.status(200).json({});
         }
     });
 }
 
 /* Answer a survey */
 module.exports.answer = (req, res, next) => {
-    Survey.updateOne({ _id: req.body._id}, { $push: {answers: req.body.answer} }, (err, survey) => {
+    Survey.updateOne({ _id: req.body._id}, { $push: {answers: req.body.answers} }, (err, survey) => {
         if(err) {
-            res.status(500).send(err);
+            res.status(500).json(err);
         } else {
-            res.status(200).send({});
+            res.status(200).json({});
         }
     });
 }

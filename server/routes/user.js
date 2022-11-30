@@ -24,4 +24,7 @@ router.post('/login', controller.login);
 /* Sign out Request */
 router.post('/logout', controller.logout);
 
+/* Edit User */
+router.post('user/edit/:id', controller.editUser);
+
 module.exports = router;

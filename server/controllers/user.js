@@ -80,3 +80,24 @@ module.exports.register = (req, res, next) => {
 module.exports.logout = (req, res, next) => {
   // Nothing to do now. 
 }
+
+
+/* Process Editting User*/
+module.exports.editUser = (req, res, next)=>{
+  let id = req.params.id;
+  let updatedUser = User({
+    "_id": id,
+    "email": req.body.email,
+    "contact_number": req.body.contact_number,
+    "displayName": req.body.displayName
+  })
+
+  User.updateOne({_id: id}, updatedUser, (err)=>{
+    if(err){
+      return res.status(500).json({message:"Something went wrong!"});
+    }
+    else{
+      return res.status(200).json({message:"User Updated!"}); 
+    }
+  })
+}

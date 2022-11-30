@@ -81,6 +81,20 @@ module.exports.logout = (req, res, next) => {
   // Nothing to do now. 
 }
 
+/* Display Edit User */
+module.exports.displayEditUser = (req, res, next)=>{
+  let id = req.params.id;
+
+  User.findById(id, (err, userToEdit)=>{
+    if(err){
+      res.end(err);
+    }
+    else{
+      res.status(200).json({success: true, user: userToEdit});
+    }
+  })
+}
+
 
 /* Process Editting User*/
 module.exports.editUser = (req, res, next)=>{
@@ -97,7 +111,7 @@ module.exports.editUser = (req, res, next)=>{
       return res.status(500).json({message:"Something went wrong!"});
     }
     else{
-      return res.status(200).json({message:"User Updated!"}); 
+      return res.status(200).json({message:"User Updated!", user: userToEdit}); 
     }
   })
 }

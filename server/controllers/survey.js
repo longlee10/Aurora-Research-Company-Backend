@@ -31,7 +31,7 @@ module.exports.list = (req, res, next) => {
     const filter = () => {
         const currentDate = new Date();
         if (req.body.onlyActive) {
-            return { start_time: { $lte: currentDate }, end_time: { $gte: currentDate } };
+            return { start_time: { $lte: currentDate }, end_time: { $gte: currentDate }, isActive:true };
         } else {
             const user = getUser(req);
             return { author: user == undefined  ? undefined : user.username };

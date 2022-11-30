@@ -50,7 +50,8 @@ module.exports.login = (req, res, next) => {
               displayName: user.displayName,
               username: user.username,
               email: user.email,
-              contact_number: user.contact_number
+              contact_number: user.contact_number,
+              role:user.role
           }, token: authToken});
 
       });

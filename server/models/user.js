@@ -33,6 +33,11 @@ let UserSchema = new mongoose.Schema(
             type: String,
             require: true
         },
+        role: {
+            type: String,
+            default: 'user',
+            require: true
+        },
     } ,
     {
         collection: "users",

@@ -32,6 +32,7 @@ db.initializeDBConnection();
 /* Routes */
 const surveyRouter = require('./server/routes/survey');
 const userRouter = require('./server/routes/user');
+const adminRouter = require('./server/routes/admin');
 
 const app = express();
 
@@ -67,6 +68,7 @@ passport.use(strategy);
 // routing
 app.use('/survey', surveyRouter);
 app.use('/user', userRouter); // Route for authentication
+app.use('/admin', adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

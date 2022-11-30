@@ -83,9 +83,9 @@ module.exports.listSurvey = (req, res, next) => {
 module.exports.updateSurveyStatus = (req, res, next) => {
     SurveyModel.findByIdAndUpdate(req.params.id, {
         isActive: req.body.data,
-    }, (err, survey) => {
-        if (err) {
-            res.status(500).send(err);
+    }, (error, survey) => {
+        if (error) {
+            res.status(500).send(error);
         } else {
             res.status(200).send({});
         }

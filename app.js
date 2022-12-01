@@ -66,7 +66,13 @@ jwtOptions.secretOrKey = process.env.JWT_KEY;
 
 let strategy = new JWTStrategy(jwtOptions, (jwt_payload, done) => {
   User.findById(jwt_payload.id)
-    .then(user => done(null, user))
+    .then(user => {
+      if (user.isActive) {
+        done(null, user);
+      } else {
+        done(null, false);
+      }
+    })
     .catch(err => done(err, false));
 });
 passport.use(strategy);

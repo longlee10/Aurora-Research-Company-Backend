@@ -79,6 +79,8 @@ module.exports.itemWithoutAnswers = (req, res, next) => {
 
 /* Add a survey */
 module.exports.add = (req, res, next) => {
+  // Force to set active
+    req.body.isActive = true;
     Survey.create(req.body, (err, survey) => {
         if(err) {
             res.status(500).json(err);

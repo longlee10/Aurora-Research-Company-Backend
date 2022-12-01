@@ -62,8 +62,9 @@ module.exports.login = (req, res, next) => {
 
 /* Process Register */
 module.exports.register = (req, res, next) => {
-  // Force to set the role as the normal user
+  // Force to set the role as the normal user and active
   req.body.role = "user";
+  req.body.isActive = true;
   User.register(req.body, req.body.password, err => {
     console.log(err);
       if(err && err.name == "UserExistsError") {

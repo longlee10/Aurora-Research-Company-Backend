@@ -105,13 +105,38 @@ module.exports.editUser = (req, res, next)=>{
     "contact_number": req.body.contact_number,
     "displayName": req.body.displayName
   })
-
-  User.updateOne({_id: id}, updatedUser, (err)=>{
-    if(err){
-      return res.status(500).json({message:"Something went wrong!"});
-    }
-    else{
-      return res.status(200).json({message:"User Updated!", user: userToEdit}); 
-    }
-  })
+  
+  if(req.body.password != User.password){
+    User.findOne({_id: id}, (err, user)=>{
+      if(err){
+        return res.status(500).json({message:"Something went wrong!"});
+      }
+      else{
+        if(!user){
+          return res.status(500).json({message:"User not found!"});
+        }
+        else{
+          user.setPassword(req.body.password, (err,user)=>{
+            if(err){
+              return res.status(500).json({message:"Something went wrong!"});
+            }
+            else{
+              res.status(200).json({message: "New password saved successfully!"});
+            }
+          })
+        }
+      }
+    })
+  }
+  else
+  {
+    User.updateOne({_id: id}, updatedUser, (err)=>{
+      if(err){
+        return res.status(500).json({message:"Something went wrong!"});
+      }
+      else{
+        return res.status(200).json({message:"User Updated!", user: userToEdit}); 
+      }
+    })
+  } 
 }

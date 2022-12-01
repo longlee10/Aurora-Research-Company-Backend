@@ -14,10 +14,14 @@ const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
-const dotdev = require('dotenv');
 
-// Load configuration
-dotdev.config();
+
+// Load configuration in development environment with .env
+// for production, just use the feature given by Heroku
+if(process.env.NODE_ENV != 'production') {
+  const dotdev = require('dotenv');
+  dotdev.config();
+}
 
 /* Authentication modules */
 let passport = require('passport');
@@ -39,7 +43,9 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(cors()); // Enable all CORS
+// Handle CORS
+console.log("origin: " + process.env.ORIGIN_URL)
+app.use(cors({ origin: process.env.ORIGIN_URL })); 
 
 //intialize passport
 app.use(passport.initialize());

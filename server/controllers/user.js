@@ -76,7 +76,3 @@ module.exports.register = (req, res, next) => {
   });
 }
 
-/* Process logout */
-module.exports.logout = (req, res, next) => {
-  // Nothing to do now. 
-}

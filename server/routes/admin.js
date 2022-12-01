@@ -28,11 +28,16 @@ router.route('/user-profile/:id').get(controller.getUser);
 // Update User
 router.route('/edit-user/:id').post(controller.editUser);
 
+// Update User's status
+router.route('/update-user-status/:id').post(controller.updateUserStatus);
+
 // Get Survey list for admin page
 router.route('/survey-list').get(controller.listSurvey);
 
-// Update Survey status
+// Update Survey's status
 router.route('/update-survey-status/:id').post(controller.updateSurveyStatus);
 
+// Update Surveys' status
+router.route('/update-surveys-status/:author').post(controller.updateSurveysStatus);
 
 module.exports = router;

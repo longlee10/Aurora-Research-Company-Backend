@@ -64,14 +64,29 @@ module.exports.editUser = (req, res, next) => {
         },
     )
 }
+
+// to update user's isActive field
+module.exports.updateUserStatus = (req, res, next) => {
+    UserModel.findByIdAndUpdate(req.params.id, {
+        isActive: req.body.data,
+    }, (error, user) => {
+        if (error) {
+            res.status(500).send(error);
+        } else {
+            res.status(200).send({});
+        }
+    });
+}
+
+// to get a list of survey
 module.exports.listSurvey = (req, res, next) => {
-    var fields = { 
+    var fields = {
         name: true,
-        start_time:true,
-        end_time:true,
-        isActive:true
+        start_time: true,
+        end_time: true,
+        isActive: true
     };
-    SurveyModel.find({},fields,(error, survey_list) => {
+    SurveyModel.find({}, fields, (error, survey_list) => {
         if (error) {
             res.status(500).json(error);
         } else {
@@ -80,6 +95,7 @@ module.exports.listSurvey = (req, res, next) => {
     });
 }
 
+// to update survey's isActive field
 module.exports.updateSurveyStatus = (req, res, next) => {
     SurveyModel.findByIdAndUpdate(req.params.id, {
         isActive: req.body.data,
@@ -90,4 +106,17 @@ module.exports.updateSurveyStatus = (req, res, next) => {
             res.status(200).send({});
         }
     });
+}
+
+// to surveys' isActive field
+module.exports.updateSurveysStatus = (req, res, next) => {
+    SurveyModel.updateMany({ author: req.params.author },
+        { isActive: req.body.data }
+        , { multi: true, upsert: true }, (error) => {
+            if (error) {
+                res.status(500).send(error);
+            } else {
+                res.status(200).send({});
+            }
+        });
 }

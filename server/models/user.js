@@ -38,6 +38,10 @@ let UserSchema = new mongoose.Schema(
             default: 'user',
             require: true
         },
+        isActive:{
+            type: Boolean,
+            default: true,
+        },
     } ,
     {
         collection: "users",

@@ -10,7 +10,6 @@
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
-    "dotenv": "^16.0.3",
     "express": "~4.16.1",
     "express-validator": "^6.14.2",
     "http-errors": "~1.6.3",
@@ -23,6 +22,7 @@
     "passport-local-mongoose": "^7.1.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "dotenv": "^16.0.3"
   }
 }

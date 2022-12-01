@@ -39,7 +39,9 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(cors()); // Enable all CORS
+// Handle CORS
+console.log("origin: " + process.env.ORIGIN_URL)
+app.use(cors({ origin: process.env.ORIGIN_URL })); 
 
 //intialize passport
 app.use(passport.initialize());

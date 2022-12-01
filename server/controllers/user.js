@@ -27,6 +27,8 @@ module.exports.login = (req, res, next) => {
         return res.status(500).json(err);
       } else if(!user) {
         return res.status(500).json({message: "Incorrect username or password."});
+      } else if(!user.isActive) {
+        return res.status(500).json({message: "Your account is suspended. Please contact administrator."});
       }
       req.login(user, {session: false}, (err) => {
           if(err) {
@@ -78,7 +80,3 @@ module.exports.register = (req, res, next) => {
   });
 }
 
-/* Process logout */
-module.exports.logout = (req, res, next) => {
-  // Nothing to do now. 
-}

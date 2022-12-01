@@ -21,7 +21,4 @@ router.post('/register', controller.register);
 /* Sign In Request */
 router.post('/login', controller.login);
 
-/* Sign out Request */
-router.post('/logout', controller.logout);
-
 module.exports = router;

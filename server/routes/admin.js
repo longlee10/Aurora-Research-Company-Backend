@@ -12,8 +12,6 @@ Team Members:
 ********************************/
 
 let express = require('express');
-//const jwt = require('jsonwebtoken')
-//let bcrypt = require('bcryptjs');
 let router = express.Router();
 let controller = require('../controllers/admin');
 

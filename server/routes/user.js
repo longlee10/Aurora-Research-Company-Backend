@@ -13,6 +13,7 @@ Team Members:
 
 const express = require('express');
 const router = express();
+const passport = require('passport');
 const controller = require('../controllers/user');
 
 /* Sign Up request */
@@ -25,6 +26,6 @@ router.post('/login', controller.login);
 router.post('/logout', controller.logout);
 
 /* Edit User */
-router.post('user/edit/:id', passport.authenticate('jwt', {session: false}), controller.editUser);
+router.post('/edit', passport.authenticate('jwt', {session: false}), controller.editUser);
 
 module.exports = router;

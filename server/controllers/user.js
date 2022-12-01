@@ -46,7 +46,7 @@ module.exports.login = (req, res, next) => {
           });
           
           return res.status(200).json({ user: {
-              id: user._id,
+              _id: user._id,
               displayName: user.displayName,
               username: user.username,
               email: user.email,
@@ -98,6 +98,25 @@ module.exports.displayEditUser = (req, res, next)=>{
 
 /* Process Editting User*/
 module.exports.editUser = (req, res, next)=>{
+  User.findByIdAndUpdate(req.body._id, {
+      email: req.body.email,
+      contact_number: req.body.contact_number,
+      displayName: req.body.displayName,
+  },  {new: true}, (err, user) => {
+      if (err) {
+          res.status(500).json(err);
+      } else {
+          res.status(200).json({ user: {
+            _id: user._id,
+            displayName: user.displayName,
+            username: user.username,
+            email: user.email,
+            contact_number: user.contact_number
+        }});
+      }
+  });
+
+  /*
   let id = req.params.id;
   let updatedUser = User({
     "_id": id,
@@ -139,4 +158,5 @@ module.exports.editUser = (req, res, next)=>{
       }
     })
   } 
+  */
 }

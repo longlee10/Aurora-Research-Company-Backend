@@ -18,7 +18,6 @@ let jwt = require('jsonwebtoken');
 
 // create the User Model instance
 let User = require('../models/user');
-const cons = require('consolidate');
 
 /* Process Login */
 module.exports.login = (req, res, next) => {
@@ -116,75 +115,22 @@ module.exports.editUser = (req, res, next)=>{
         }});
       }
   });
-
-  /*
-  let id = req.params.id;
-  let updatedUser = User({
-    "_id": id,
-    "email": req.body.email,
-    "contact_number": req.body.contact_number,
-    "displayName": req.body.displayName
-  })
-  
-  if(req.body.password != User.password){
-    User.findOne({_id: id}, (err, user)=>{
-      if(err){
-        return res.status(500).json({message:"Something went wrong!"});
-      }
-      else{
-        if(!user){
-          return res.status(500).json({message:"User not found!"});
-        }
-        else{
-          user.setPassword(req.body.password, (err,user)=>{
-            if(err){
-              return res.status(500).json({message:"Something went wrong!"});
-            }
-            else{
-              res.status(200).json({message: "New password saved successfully!"});
-            }
-          })
-        }
-      }
-    })
-  }
-  else
-  {
-    User.updateOne({_id: id}, updatedUser, (err)=>{
-      if(err){
-        return res.status(500).json({message:"Something went wrong!"});
-      }
-      else{
-        return res.status(200).json({message:"User Updated!", user: userToEdit}); 
-      }
-    })
-  } 
-  */
 }
 
 /* Edit Password */
-
-module.exports.editPassword = (req, res, next)=>{
-  /*User.findByIdAndUpdate(req.body._id, {
-      password: req.body.password
-      
-  },  {new: true}, (err, user) => {
-      if (err) {
-          res.status(500).json(err);
-      } else {
-          res.status(200).json({ user: {
-            _id: user._id,
-            password: user.password
-        }});
-      }
-  })*/
-
-  let id = req.params.id;
-  User.findOne({_id: id}, (err, user)=>{
+module.exports.editPassword = (req, res, next) => {
+  User.findOne({_id: req.body._id}, (err, user) => {
     if(err){
       res.status(500).json(err);
-    }else{
-      user.setPassword(req.body.password);
+    }else {
+      user.setPassword(req.body.password,(err, user) => {
+        if (err) {
+          res.status(500).json(err);
+        } else {
+          user.save();
+          return res.status(200).json({});
+        }
+      });
     }
-  })
-};
+  });
+}

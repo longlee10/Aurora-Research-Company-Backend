@@ -29,5 +29,6 @@ router.post('/logout', controller.logout);
 router.post('/edit', passport.authenticate('jwt', {session: false}), controller.editUser);
 
 /* Edit Password */
-router.post('/edit-password', passport.authenticate('jwt', {session: false}, controller.editPassword));
+router.post('/edit-password', passport.authenticate('jwt', {session: false}), controller.editPassword);
+
 module.exports = router;

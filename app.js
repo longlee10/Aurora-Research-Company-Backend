@@ -14,10 +14,14 @@ const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
-const dotdev = require('dotenv');
 
-// Load configuration
-dotdev.config();
+
+// Load configuration in development environment with .env
+// for production, just use the feature given by Heroku
+if(process.env.NODE_ENV != 'production') {
+  const dotdev = require('dotenv');
+  dotdev.config();
+}
 
 /* Authentication modules */
 let passport = require('passport');
@@ -32,6 +36,7 @@ db.initializeDBConnection();
 /* Routes */
 const surveyRouter = require('./server/routes/survey');
 const userRouter = require('./server/routes/user');
+const adminRouter = require('./server/routes/admin');
 
 const app = express();
 
@@ -39,7 +44,9 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(cors()); // Enable all CORS
+// Handle CORS
+console.log("origin: " + process.env.ORIGIN_URL)
+app.use(cors({ origin: process.env.ORIGIN_URL })); 
 
 //intialize passport
 app.use(passport.initialize());
@@ -59,7 +66,13 @@ jwtOptions.secretOrKey = process.env.JWT_KEY;
 
 let strategy = new JWTStrategy(jwtOptions, (jwt_payload, done) => {
   User.findById(jwt_payload.id)
-    .then(user => done(null, user))
+    .then(user => {
+      if (user.isActive) {
+        done(null, user);
+      } else {
+        done(null, false);
+      }
+    })
     .catch(err => done(err, false));
 });
 passport.use(strategy);
@@ -67,14 +80,15 @@ passport.use(strategy);
 // routing
 app.use('/survey', surveyRouter);
 app.use('/user', userRouter); // Route for authentication
+app.use('/admin', adminRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

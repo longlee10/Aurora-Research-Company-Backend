@@ -41,6 +41,10 @@ let surveySchema = mongoose.Schema({
     description: String,    // description of survey 
     start_time: Date, 
     end_time: Date, 
+    isActive:{
+      type: Boolean,
+      default: true,
+    },
     questions: [{    // questions available 
         type: questionSchema, 
         required: true, 

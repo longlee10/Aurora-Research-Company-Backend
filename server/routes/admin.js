@@ -14,28 +14,29 @@ Team Members:
 let express = require('express');
 let router = express.Router();
 let controller = require('../controllers/admin');
+let passport = require('passport');
 
-router.route('/user-list').get(controller.listUser);
+router.get('/user-list', passport.authenticate('jwt', {session: false}), controller.listUser);
 
 // Delete User
-router.route('/delete-user/:id').delete(controller.deleteUser);
+router.delete('/delete-user/:id', passport.authenticate('jwt', {session: false}), controller.deleteUser);
 
 // Get User
-router.route('/user-profile/:id').get(controller.getUser);
+router.get('/user-profile/:id', passport.authenticate('jwt', {session: false}), controller.getUser);
 
 // Update User
-router.route('/edit-user/:id').post(controller.editUser);
+router.post('/edit-user/:id', passport.authenticate('jwt', {session: false}), controller.editUser);
 
 // Update User's status
-router.route('/update-user-status/:id').post(controller.updateUserStatus);
+router.post('/update-user-status/:id', passport.authenticate('jwt', {session: false}), controller.updateUserStatus);
 
 // Get Survey list for admin page
-router.route('/survey-list').get(controller.listSurvey);
+router.get('/survey-list', passport.authenticate('jwt', {session: false}), controller.listSurvey);
 
 // Update Survey's status
-router.route('/update-survey-status/:id').post(controller.updateSurveyStatus);
+router.post('/update-survey-status/:id', passport.authenticate('jwt', {session: false}), controller.updateSurveyStatus);
 
 // Update Surveys' status
-router.route('/update-surveys-status/:author').post(controller.updateSurveysStatus);
+router.post('/update-surveys-status/:author', passport.authenticate('jwt', {session: false}), controller.updateSurveysStatus);
 
 module.exports = router;

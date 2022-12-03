@@ -40,7 +40,8 @@ module.exports.login = (req, res, next) => {
               displayName: user.displayName,
               username: user.username,
               email: user.email,
-              contact_number: user.contact_number
+              contact_number: user.contact_number,
+              role: user.role
           }
 
           const authToken = jwt.sign(payload, process.env.JWT_KEY, {
@@ -48,12 +49,12 @@ module.exports.login = (req, res, next) => {
           });
           
           return res.status(200).json({ user: {
-              id: user._id,
+              _id: user._id,
               displayName: user.displayName,
               username: user.username,
               email: user.email,
               contact_number: user.contact_number,
-              role:user.role
+              role: user.role
           }, token: authToken});
 
       });
@@ -62,7 +63,7 @@ module.exports.login = (req, res, next) => {
 
 /* Process Register */
 module.exports.register = (req, res, next) => {
-  // Force to set the role as the normal user and active
+  // Force to set the role as the normal user
   req.body.role = "user";
   req.body.isActive = true;
   User.register(req.body, req.body.password, err => {
@@ -80,3 +81,41 @@ module.exports.register = (req, res, next) => {
   });
 }
 
+/* Process Editting User*/
+module.exports.editUser = (req, res, next)=>{
+  User.findByIdAndUpdate(req.body._id, {
+      email: req.body.email,
+      contact_number: req.body.contact_number,
+      displayName: req.body.displayName,
+  },  {new: true}, (err, user) => {
+      if (err) {
+          res.status(500).json(err);
+      } else {
+          res.status(200).json({ user: {
+            _id: user._id,
+            displayName: user.displayName,
+            username: user.username,
+            email: user.email,
+            contact_number: user.contact_number
+        }});
+      }
+  });
+}
+
+/* Edit Password */
+module.exports.editPassword = (req, res, next) => {
+  User.findOne({_id: req.body._id}, (err, user) => {
+    if(err){
+      res.status(500).json(err);
+    }else {
+      user.setPassword(req.body.password,(err, user) => {
+        if (err) {
+          res.status(500).json(err);
+        } else {
+          user.save();
+          return res.status(200).json({});
+        }
+      });
+    }
+  });
+}

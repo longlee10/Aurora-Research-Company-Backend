@@ -27,6 +27,8 @@ module.exports.login = (req, res, next) => {
         return res.status(500).json(err);
       } else if(!user) {
         return res.status(500).json({message: "Incorrect username or password."});
+      } else if(!user.isActive) {
+        return res.status(500).json({message: "Your account is suspended. Please contact administrator."});
       }
       req.login(user, {session: false}, (err) => {
           if(err) {
@@ -38,7 +40,8 @@ module.exports.login = (req, res, next) => {
               displayName: user.displayName,
               username: user.username,
               email: user.email,
-              contact_number: user.contact_number
+              contact_number: user.contact_number,
+              role: user.role
           }
 
           const authToken = jwt.sign(payload, process.env.JWT_KEY, {
@@ -50,7 +53,8 @@ module.exports.login = (req, res, next) => {
               displayName: user.displayName,
               username: user.username,
               email: user.email,
-              contact_number: user.contact_number
+              contact_number: user.contact_number,
+              role: user.role
           }, token: authToken});
 
       });
@@ -61,6 +65,7 @@ module.exports.login = (req, res, next) => {
 module.exports.register = (req, res, next) => {
   // Force to set the role as the normal user
   req.body.role = "user";
+  req.body.isActive = true;
   User.register(req.body, req.body.password, err => {
     console.log(err);
       if(err && err.name == "UserExistsError") {
@@ -75,26 +80,6 @@ module.exports.register = (req, res, next) => {
       }
   });
 }
-
-/* Process logout */
-module.exports.logout = (req, res, next) => {
-  // Nothing to do now. 
-}
-
-/* Display Edit User */
-module.exports.displayEditUser = (req, res, next)=>{
-  let id = req.params.id;
-
-  User.findById(id, (err, userToEdit)=>{
-    if(err){
-      res.end(err);
-    }
-    else{
-      res.status(200).json({success: true, user: userToEdit});
-    }
-  })
-}
-
 
 /* Process Editting User*/
 module.exports.editUser = (req, res, next)=>{

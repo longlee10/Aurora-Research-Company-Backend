@@ -22,9 +22,6 @@ router.post('/register', controller.register);
 /* Sign In Request */
 router.post('/login', controller.login);
 
-/* Sign out Request */
-router.post('/logout', controller.logout);
-
 /* Edit User */
 router.post('/edit', passport.authenticate('jwt', {session: false}), controller.editUser);
 

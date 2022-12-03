@@ -18,6 +18,7 @@ let jwt = require('jsonwebtoken');
 
 // create the User Model instance
 let User = require('../models/user');
+const cons = require('consolidate');
 
 /* Process Login */
 module.exports.login = (req, res, next) => {
@@ -160,3 +161,30 @@ module.exports.editUser = (req, res, next)=>{
   } 
   */
 }
+
+/* Edit Password */
+
+module.exports.editPassword = (req, res, next)=>{
+  /*User.findByIdAndUpdate(req.body._id, {
+      password: req.body.password
+      
+  },  {new: true}, (err, user) => {
+      if (err) {
+          res.status(500).json(err);
+      } else {
+          res.status(200).json({ user: {
+            _id: user._id,
+            password: user.password
+        }});
+      }
+  })*/
+
+  let id = req.params.id;
+  User.findOne({_id: id}, (err, user)=>{
+    if(err){
+      res.status(500).json(err);
+    }else{
+      user.setPassword(req.body.password);
+    }
+  })
+};

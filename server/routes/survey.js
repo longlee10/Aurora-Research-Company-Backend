@@ -16,6 +16,9 @@ let router = express.Router();
 let passport = require('passport');
 let controller = require('../controllers/survey');
 
+/* POST for a user survey list */
+router.post('/my-list', passport.authenticate('jwt', {session: false}), controller.myList);
+
 /* POST for a survey list */
 router.post('/list', controller.list);
 

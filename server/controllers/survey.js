@@ -25,36 +25,11 @@ getUser = (req) => {
   }
 };
 
-/* List surveys */
-module.exports.list = (req, res, next) => {
-  // Filter criteria
-  const filter = () => {
-    /**
-     * CWAD-43 
-    ref: https://stackoverflow.com/questions/8636617/how-to-get-start-and-end-of-day-in-javascript
-    Root cause: new Date() is creating the current time stamp. 
-    And old criteria is querying surveys with end date that great than "Now"
-    Changing the filter to:
-    1) start time is less than end of today;
-    2) end time is great than start of today
-    */
-    var start = new Date();
-    start.setUTCHours(0, 0, 0, 0);
-    var end = new Date();
-    end.setUTCHours(23, 59, 59, 999);
-    if (req.body.onlyActive) {
-      return {
-        start_time: { $lte: end },
-        end_time: { $gte: start },
-        isActive: true,
-      };
-    } else {
-      const user = getUser(req);
-      return { author: user == undefined ? undefined : user.username };
-    }
-  };
+/* User surveys */
+module.exports.myList = (req, res, next) => {
+  const user = getUser(req);
   // Find results
-  Survey.find(filter()).exec((err, list) => {
+  Survey.find({author: user == undefined ? undefined : user.username }).exec((err, list) => {
     if (err) {
       res.status(500).json(err);
     } else {
@@ -62,6 +37,25 @@ module.exports.list = (req, res, next) => {
         _id: survey._id,
         name: survey.name,
         description: survey.description,
+      }));
+      res.status(200).json(results);
+    }
+  });
+};
+
+/* List surveys */
+module.exports.list = (req, res, next) => {
+  // Find results
+  Survey.find({isActive: true}).exec((err, list) => {
+    if (err) {
+      res.status(500).json(err);
+    } else {
+      const results = list.map((survey) => ({
+        _id: survey._id,
+        name: survey.name,
+        description: survey.description,
+        start_time: survey.start_time,
+        end_time: survey.end_time
       }));
       res.status(200).json(results);
     }
